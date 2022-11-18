@@ -38,17 +38,18 @@ public class StudyRecordTest {
         this.isPassedExpected = expectedResult;
     }
 
-    @Before
-    public void setUp() throws ExceptionList {
-
-    }
-
-
     @Parameterized.Parameters
     public static Collection<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
-                {"13991", "1010101", "SoftwareTest", 3, GraduateLevel.Undergraduate, 12.5, true},
-                {"13992", "1010101", "SoftwareTest", 3, GraduateLevel.Undergraduate, 9, false}
+                {"13991", "1010101", "Computer Networks", 3, GraduateLevel.Undergraduate, 12.5, true},
+                {"13991", "1010101", "Computer Networks", 3, GraduateLevel.Undergraduate, 10, true},
+                {"13992", "1010101", "Computer Networks", 3, GraduateLevel.Undergraduate, 9, false},
+                {"13993", "1234567", "Advanced CN", 3, GraduateLevel.Masters, 11.9, false},
+                {"13993", "1234567", "Advanced CN", 3, GraduateLevel.Masters, 12, true},
+                {"13991", "1234567", "Advanced CN", 3, GraduateLevel.Masters, 20, true},
+                {"14012", "1010101", "Stochastic Processing", 3, GraduateLevel.PHD, 9, false},
+                {"14013", "1010101", "Stochastic Processing", 3, GraduateLevel.PHD, 14, true},
+                {"14013", "1010101", "Stochastic Processing", 3, GraduateLevel.PHD, 14.1, true}
         });
     }
 
@@ -57,11 +58,5 @@ public class StudyRecordTest {
         Course course = new Course(courseNumber, title, credits, graduateLevel.toString());
         studyRecord = new StudyRecord(term, course, grade);
         Assert.assertEquals(isPassedExpected, studyRecord.isPassed(course.getGraduateLevel()));
-    }
-
-
-    @After
-    public void tearDown() {
-
     }
 }
