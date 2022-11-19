@@ -22,8 +22,11 @@ public class PresentationScheduleTest {
         Assert.assertFalse(mainPresentationSchedule.hasConflict(testPresentationSchedule));
     }
 
-
-
+    @Test
+    public void hasConflictWithStartAfterMainFinishTest() throws ExceptionList {
+        var testPresentationSchedule = new PresentationSchedule("Saturday", "11:00", "13:30");
+        Assert.assertFalse(mainPresentationSchedule.hasConflict(testPresentationSchedule));
+    }
 
 
     @After

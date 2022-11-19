@@ -24,16 +24,19 @@ public class StudyRecordTest {
     private String courseNumber;
     private String title;
     private int credits;
-    private GraduateLevel graduateLevel;
+    private GraduateLevel courseGraduateLevel;
+    private GraduateLevel studentGraduateLevel;
     private double grade;
     private boolean isPassedExpected;
 
-    public StudyRecordTest(String term, String courseNumber, String title, int credits, GraduateLevel graduateLevel, double grade, boolean expectedResult){
+    public StudyRecordTest(String term, String courseNumber, String title, int credits, GraduateLevel courseGraduateLevel,
+                           GraduateLevel studentGraduateLevel, double grade, boolean expectedResult){
         this.term = term;
         this.courseNumber = courseNumber;
         this.title = title;
         this.credits = credits;
-        this.graduateLevel = graduateLevel;
+        this.courseGraduateLevel = courseGraduateLevel;
+        this.studentGraduateLevel = studentGraduateLevel;
         this.grade = grade;
         this.isPassedExpected = expectedResult;
     }
@@ -41,22 +44,29 @@ public class StudyRecordTest {
     @Parameterized.Parameters
     public static Collection<Object[]> parameters() {
         return Arrays.asList(new Object[][] {
-                {"13991", "1010101", "Computer Networks", 3, GraduateLevel.Undergraduate, 12.5, true},
-                {"13991", "1010101", "Computer Networks", 3, GraduateLevel.Undergraduate, 10, true},
-                {"13992", "1010101", "Computer Networks", 3, GraduateLevel.Undergraduate, 9, false},
-                {"13993", "1234567", "Advanced CN", 3, GraduateLevel.Masters, 11.9, false},
-                {"13993", "1234567", "Advanced CN", 3, GraduateLevel.Masters, 12, true},
-                {"13991", "1234567", "Advanced CN", 3, GraduateLevel.Masters, 20, true},
-                {"14012", "1010101", "Stochastic Processing", 3, GraduateLevel.PHD, 9, false},
-                {"14013", "1010101", "Stochastic Processing", 3, GraduateLevel.PHD, 14, true},
-                {"14013", "1010101", "Stochastic Processing", 3, GraduateLevel.PHD, 14.1, true}
+                {"13991", "1010101", "Computer Networks", 3, GraduateLevel.Undergraduate, GraduateLevel.Undergraduate, 12.5, true},
+                {"13991", "1010101", "Computer Networks", 3, GraduateLevel.Undergraduate, GraduateLevel.Undergraduate, 10, true},
+                {"13992", "1010101", "Computer Networks", 3, GraduateLevel.Undergraduate, GraduateLevel.Undergraduate, 9, false},
+                {"13993", "1234567", "Advanced CN", 3, GraduateLevel.Masters, GraduateLevel.Masters, 11.9, false},
+                {"13993", "1234567", "Advanced CN", 3, GraduateLevel.Masters, GraduateLevel.Masters, 12, true},
+                {"13991", "1234567", "Advanced CN", 3, GraduateLevel.Masters, GraduateLevel.Masters, 20, true},
+                {"14012", "1010101", "Stochastic Processing", 3, GraduateLevel.PHD, GraduateLevel.PHD, 9, false},
+                {"14013", "1010101", "Stochastic Processing", 3, GraduateLevel.PHD, GraduateLevel.PHD, 14, true},
+                {"14013", "1010101", "Stochastic Processing", 3, GraduateLevel.PHD, GraduateLevel.PHD, 14.1, true},
+
+
+                {"13993", "1234567", "Advanced CN", 3, GraduateLevel.Masters, GraduateLevel.Undergraduate, 10, true},
+                {"14001", "1010101", "Computer Networks", 3, GraduateLevel.Undergraduate, GraduateLevel.Masters, 10, true},
+                {"14001", "1010101", "Computer Networks", 3, GraduateLevel.Undergraduate, GraduateLevel.PHD, 9.5, false},
+                {"14001", "1010101", "Computer Networks", 3, GraduateLevel.Undergraduate, GraduateLevel.PHD, 10, true}
+
         });
     }
 
     @Test
     public void isPassedTest() throws ExceptionList {
-        Course course = new Course(courseNumber, title, credits, graduateLevel.toString());
+        Course course = new Course(courseNumber, title, credits, courseGraduateLevel.toString());
         studyRecord = new StudyRecord(term, course, grade);
-        Assert.assertEquals(isPassedExpected, studyRecord.isPassed(course.getGraduateLevel()));
+        Assert.assertEquals(isPassedExpected, studyRecord.isPassed(studentGraduateLevel));
     }
 }

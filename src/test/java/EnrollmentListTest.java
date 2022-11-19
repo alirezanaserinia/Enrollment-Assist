@@ -1,7 +1,4 @@
-import ir.proprog.enrollassist.Exception.ExceptionList;
-
 import ir.proprog.enrollassist.domain.EnrollmentRules.EnrollmentRuleViolation;
-import ir.proprog.enrollassist.domain.GraduateLevel;
 import ir.proprog.enrollassist.domain.course.Course;
 import ir.proprog.enrollassist.domain.enrollmentList.EnrollmentList;
 import ir.proprog.enrollassist.domain.major.Major;
@@ -10,10 +7,7 @@ import ir.proprog.enrollassist.domain.section.ExamTime;
 import ir.proprog.enrollassist.domain.section.PresentationSchedule;
 import ir.proprog.enrollassist.domain.section.Section;
 import ir.proprog.enrollassist.domain.student.Student;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -24,28 +18,39 @@ public class EnrollmentListTest {
 
     private EnrollmentList enrollmentList;
     private String listName;
-    private List<Course> cources;
+    private List<Course> courses;
     private List<ExamTime> examTimes;
     private List<PresentationSchedule> preScheds;
     private List<Section> sections;
     private int expectedViolationsCounts;
-    int[] testSections;
+    private int[] testSections;
+    private Major ce;
+    private Program ceProgram;
+    private Student arman;
+
+    @Before
+    public void setUp() throws Exception {
+        setCourses();
+        setExamTimes();
+        setPreScheds();
+        setSections();
+        ce = new Major("8101", "CE", "Engineering");
+        ceProgram = new Program(ce, "Undergraduate", 140, 140, "Major");
+        ceProgram.addCourse(this.courses.get(0), this.courses.get(3), this.courses.get(2), this.courses.get(5));
+
+        arman = new Student("810101999", "Undergraduate")
+                .setGrade("11112", this.courses.get(0), 11.5);
+
+        arman.addProgram(ceProgram);
+    }
 
     public EnrollmentListTest(int expectedViolationsCounts, String listName, int[] testSections) throws Exception {
-        prepareData();
         this.listName = listName;
         this.testSections = testSections;
         this.expectedViolationsCounts = expectedViolationsCounts;
     }
 
-    private void prepareData() throws Exception {
-        setCources();
-        setExamTimes();
-        setPreScheds();
-        setSections();
-    }
-
-    private void setCources() throws Exception {
+    private void setCourses() throws Exception {
         Course math1 = new Course("4444444", "MATH1", 3, "Undergraduate");
         Course phys1 = new Course("8888888", "PHYS1", 3, "Undergraduate");
         Course prog = new Course("7777777", "PROG", 4, "Undergraduate");
@@ -54,7 +59,7 @@ public class EnrollmentListTest {
         Course ap = new Course("2222222", "AP", 3, "Undergraduate").withPre(prog);
         Course maaref = new Course("5555555", "MAAREF", 2, "Undergraduate");
         Course farsi = new Course("1212121", "FA", 3, "Undergraduate");
-        this.cources = new ArrayList<Course>(Arrays.asList(math1, phys1, prog, math2, phys2, ap, maaref, farsi));
+        this.courses = new ArrayList<Course>(Arrays.asList(math1, phys1, prog, math2, phys2, ap, maaref, farsi));
     }
 
     private void setExamTimes() throws Exception {
@@ -92,27 +97,27 @@ public class EnrollmentListTest {
     }
 
     private void setSections() throws Exception {
-        Section math1_1 = new Section(this.cources.get(0), "01", this.examTimes.get(0),
+        Section math1_1 = new Section(this.courses.get(0), "01", this.examTimes.get(0),
                 new HashSet<PresentationSchedule>(Arrays.asList(this.preScheds.get(0), this.preScheds.get(6))));
-        Section phys1_1 = new Section(this.cources.get(1), "01", this.examTimes.get(1),
+        Section phys1_1 = new Section(this.courses.get(1), "01", this.examTimes.get(1),
                 new HashSet<PresentationSchedule>(Arrays.asList(this.preScheds.get(1), this.preScheds.get(7))));
-        Section prog_1  = new Section(this.cources.get(2), "01", this.examTimes.get(2),
+        Section prog_1  = new Section(this.courses.get(2), "01", this.examTimes.get(2),
                 new HashSet<PresentationSchedule>(Arrays.asList(this.preScheds.get(2), this.preScheds.get(8))));
-        Section math2_1 = new Section(this.cources.get(3), "01", this.examTimes.get(0),
+        Section math2_1 = new Section(this.courses.get(3), "01", this.examTimes.get(0),
                 new HashSet<PresentationSchedule>(Arrays.asList(this.preScheds.get(0), this.preScheds.get(6))));
-        Section math2_2 = new Section(this.cources.get(3), "02", this.examTimes.get(0),
+        Section math2_2 = new Section(this.courses.get(3), "02", this.examTimes.get(0),
                 new HashSet<PresentationSchedule>(Arrays.asList(this.preScheds.get(3), this.preScheds.get(9))));
-        Section phys2_1 = new Section(this.cources.get(4), "01", this.examTimes.get(1),
+        Section phys2_1 = new Section(this.courses.get(4), "01", this.examTimes.get(1),
                 new HashSet<PresentationSchedule>(Arrays.asList(this.preScheds.get(1), this.preScheds.get(7))));
-        Section phys2_2 = new Section(this.cources.get(4), "02", this.examTimes.get(1),
+        Section phys2_2 = new Section(this.courses.get(4), "02", this.examTimes.get(1),
                 new HashSet<PresentationSchedule>(Arrays.asList(this.preScheds.get(1), this.preScheds.get(7))));
-        Section ap_1    = new Section(this.cources.get(5), "01", this.examTimes.get(2),
+        Section ap_1    = new Section(this.courses.get(5), "01", this.examTimes.get(2),
                 new HashSet<PresentationSchedule>(Arrays.asList(this.preScheds.get(4), this.preScheds.get(10))));
-        Section farsi_1 = new Section(this.cources.get(7), "10", this.examTimes.get(3),
+        Section farsi_1 = new Section(this.courses.get(7), "10", this.examTimes.get(3),
                 new HashSet<PresentationSchedule>(Arrays.asList(this.preScheds.get(12))));
-        Section maaref_1 = new Section(this.cources.get(6), "10", this.examTimes.get(4),
+        Section maaref_1 = new Section(this.courses.get(6), "10", this.examTimes.get(4),
                 new HashSet<PresentationSchedule>(Arrays.asList(this.preScheds.get(13))));
-        Section maaref_2 = new Section(this.cources.get(6), "10", this.examTimes.get(5),
+        Section maaref_2 = new Section(this.courses.get(6), "10", this.examTimes.get(5),
                 new HashSet<PresentationSchedule>(Arrays.asList(this.preScheds.get(2))));
         this.sections = new ArrayList<Section>(Arrays.asList(math1_1, phys1_1, prog_1, math2_1,
                 math2_2, phys2_1, phys2_2, ap_1, farsi_1, maaref_1, maaref_2));
@@ -120,8 +125,6 @@ public class EnrollmentListTest {
 
     @Parameterized.Parameters
     public static Collection<Object[]> parameters() throws Exception {
-
-
         return Arrays.asList(new Object[][] {
                 {0, "goodList", new int[]{1, 2, 3, 8}},
                 {1, "CourseHasRequestedTwice", new int[]{1, 2, 8, 8}},
@@ -134,21 +137,23 @@ public class EnrollmentListTest {
 
     @Test
     public void checkEnrollmentRulesTest() throws Exception {
-        Major ce = new Major("8101", "CE", "Engineering");
-
-        Program ceProgram = new Program(ce, "Undergraduate", 140, 140, "Major");
-        ceProgram.addCourse(this.cources.get(0), this.cources.get(3), this.cources.get(2), this.cources.get(5));
-
-        Student arman = new Student("810101999", "Undergraduate")
-                .setGrade("11112", this.cources.get(0), 11.5);
-
-        arman.addProgram(ceProgram);
         enrollmentList = new EnrollmentList(listName, arman);
         for (int sec : testSections)
             enrollmentList.addSection(this.sections.get(sec));
 
         List<EnrollmentRuleViolation> violations = enrollmentList.checkEnrollmentRules();
         Assert.assertEquals(expectedViolationsCounts, violations.size());
+    }
+
+    @After
+    public void tearDown(){
+        courses = null;
+        examTimes = null;
+        preScheds = null;
+        sections = null;
+        ce = null;
+        ceProgram = null;
+        arman = null;
     }
 
 }
