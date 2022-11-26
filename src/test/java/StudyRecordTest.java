@@ -1,72 +1,53 @@
 import ir.proprog.enrollassist.Exception.ExceptionList;
 import ir.proprog.enrollassist.domain.GraduateLevel;
 import ir.proprog.enrollassist.domain.course.Course;
-import ir.proprog.enrollassist.domain.section.PresentationSchedule;
 import ir.proprog.enrollassist.domain.studyRecord.StudyRecord;
-
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Arrays;
-import java.util.Collection;
+import static org.mockito.Mockito.*;
 
-
-@RunWith(value = Parameterized.class)
+@RunWith(MockitoJUnitRunner.class)
 public class StudyRecordTest {
-
     private StudyRecord studyRecord;
-    private String term;
-    private String courseNumber;
-    private String title;
-    private int credits;
-    private GraduateLevel courseGraduateLevel;
-    private GraduateLevel studentGraduateLevel;
-    private double grade;
-    private boolean isPassedExpected;
+    @Mock
+    private Course course;
+    private String term = "00001";
+    private double grade = 16.5;
 
-    public StudyRecordTest(String term, String courseNumber, String title, int credits, GraduateLevel courseGraduateLevel,
-                           GraduateLevel studentGraduateLevel, double grade, boolean expectedResult){
-        this.term = term;
-        this.courseNumber = courseNumber;
-        this.title = title;
-        this.credits = credits;
-        this.courseGraduateLevel = courseGraduateLevel;
-        this.studentGraduateLevel = studentGraduateLevel;
-        this.grade = grade;
-        this.isPassedExpected = expectedResult;
+    @Before
+    public void setup() throws ExceptionList {
+        studyRecord = new StudyRecord(term, course, grade);
     }
 
-    @Parameterized.Parameters
-    public static Collection<Object[]> parameters() {
-        return Arrays.asList(new Object[][] {
-                {"13991", "1010101", "Computer Networks", 3, GraduateLevel.Undergraduate, GraduateLevel.Undergraduate, 12.5, true},
-                {"13991", "1010101", "Computer Networks", 3, GraduateLevel.Undergraduate, GraduateLevel.Undergraduate, 10, true},
-                {"13992", "1010101", "Computer Networks", 3, GraduateLevel.Undergraduate, GraduateLevel.Undergraduate, 9, false},
-                {"13993", "1234567", "Advanced CN", 3, GraduateLevel.Masters, GraduateLevel.Masters, 11.9, false},
-                {"13993", "1234567", "Advanced CN", 3, GraduateLevel.Masters, GraduateLevel.Masters, 12, true},
-                {"13991", "1234567", "Advanced CN", 3, GraduateLevel.Masters, GraduateLevel.Masters, 20, true},
-                {"14012", "1010101", "Stochastic Processing", 3, GraduateLevel.PHD, GraduateLevel.PHD, 9, false},
-                {"14013", "1010101", "Stochastic Processing", 3, GraduateLevel.PHD, GraduateLevel.PHD, 14, true},
-                {"14013", "1010101", "Stochastic Processing", 3, GraduateLevel.PHD, GraduateLevel.PHD, 14.1, true},
-
-
-                {"13993", "1234567", "Advanced CN", 3, GraduateLevel.Masters, GraduateLevel.Undergraduate, 10, true},
-                {"14001", "1010101", "Computer Networks", 3, GraduateLevel.Undergraduate, GraduateLevel.Masters, 10, true},
-                {"14001", "1010101", "Computer Networks", 3, GraduateLevel.Undergraduate, GraduateLevel.PHD, 9.5, false},
-                {"14001", "1010101", "Computer Networks", 3, GraduateLevel.Undergraduate, GraduateLevel.PHD, 10, true}
-
-        });
+    @After
+    public void teardown() {
+        studyRecord = null;
     }
 
     @Test
-    public void isPassedTest() throws ExceptionList {
-        Course course = new Course(courseNumber, title, credits, courseGraduateLevel.toString());
-        studyRecord = new StudyRecord(term, course, grade);
-        Assert.assertEquals(isPassedExpected, studyRecord.isPassed(studentGraduateLevel));
+    public void testWeightedScore() {
+        when(course.getCredits()).thenReturn(3);
+        Assert.assertEquals(grade * 3, studyRecord.weightedScore(), 0.01);
+    }
+
+    @Test
+    public void testIsPassedCallsGraduateMinValidGrade() {
+        GraduateLevel graduateLevel = mock(GraduateLevel.class);
+        studyRecord.isPassed(graduateLevel);
+        verify(graduateLevel).getMinValidGrade();
+    }
+
+    @Test
+    public void testIsPassed() {
+        GraduateLevel graduateLevel = mock(GraduateLevel.class);
+        when(graduateLevel.getMinValidGrade()).thenReturn(10.0);
+        when(course.getGraduateLevel()).thenReturn(graduateLevel);
+        Assert.assertTrue(studyRecord.isPassed(graduateLevel));
     }
 }
