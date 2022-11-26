@@ -8,6 +8,7 @@ import ir.proprog.enrollassist.domain.section.PresentationSchedule;
 import ir.proprog.enrollassist.domain.section.Section;
 import ir.proprog.enrollassist.domain.student.Student;
 import org.junit.*;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 

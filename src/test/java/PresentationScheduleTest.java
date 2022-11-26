@@ -19,6 +19,7 @@ public class PresentationScheduleTest {
     @Test
     public void hasConflictWithDifferentDayOfWeekTest() throws ExceptionList {
         var testPresentationSchedule = new PresentationSchedule("Sunday", "09:00", "10:30");
+
         Assert.assertFalse(mainPresentationSchedule.hasConflict(testPresentationSchedule));
     }
 
@@ -29,9 +30,39 @@ public class PresentationScheduleTest {
     }
 
     @Test
-    public void hasConflictWithStartAtMainFinishFinishTest() throws ExceptionList {
+    public void hasConflictWithStartAtMainFinishTest() throws ExceptionList {
         var testPresentationSchedule = new PresentationSchedule("Saturday", "10:30", "12:00");
         Assert.assertFalse(mainPresentationSchedule.hasConflict(testPresentationSchedule));
+    }
+
+    @Test
+    public void hasConflictWithFinishBeforeMainStartTest() throws ExceptionList {
+        var testPresentationSchedule = new PresentationSchedule("Saturday", "07:00", "08:30");
+        Assert.assertFalse(mainPresentationSchedule.hasConflict(testPresentationSchedule));
+    }
+
+    @Test
+    public void hasConflictWithFinishAtMainStartTest() throws ExceptionList {
+        var testPresentationSchedule = new PresentationSchedule("Saturday", "07:30", "09:00");
+        Assert.assertFalse(mainPresentationSchedule.hasConflict(testPresentationSchedule));
+    }
+
+    @Test
+    public void hasConflictWithFinishBetweenMainTest() throws ExceptionList {
+        var testPresentationSchedule = new PresentationSchedule("Saturday", "08:00", "10:00");
+        Assert.assertTrue(mainPresentationSchedule.hasConflict(testPresentationSchedule));
+    }
+
+    @Test
+    public void hasConflictWithStartBetweenMainTest() throws ExceptionList {
+        var testPresentationSchedule = new PresentationSchedule("Saturday", "10:00", "12:00");
+        Assert.assertTrue(mainPresentationSchedule.hasConflict(testPresentationSchedule));
+    }
+
+    @Test
+    public void hasConflictWithAroundMainTest() throws ExceptionList {
+        var testPresentationSchedule = new PresentationSchedule("Saturday", "08:00", "12:00");
+        Assert.assertTrue(mainPresentationSchedule.hasConflict(testPresentationSchedule));
     }
 
     @After
