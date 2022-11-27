@@ -4,15 +4,21 @@ import ir.proprog.enrollassist.domain.course.Course;
 import ir.proprog.enrollassist.repository.CourseRepository;
 import ir.proprog.enrollassist.repository.ProgramRepository;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
+import java.util.HashSet;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
 public class AddCourseServiceTest {
 
     @Mock
@@ -20,46 +26,47 @@ public class AddCourseServiceTest {
     @Mock
     private ProgramRepository programRepository;
 
-    @Rule public MockitoRule initRule = MockitoJUnit.rule();
-
-    private Course course;
-
+    @InjectMocks
     private AddCourseService service;
 
-
-    @BeforeEach
-    public void setUp(){
-        service = new AddCourseService(courseRepository, programRepository);
-    }
-
     @Test
-    public void checkLoopWithoutLoopTest() throws ExceptionList {
-        Course math1 = new Course("1111111", "math1", 3, "Undergraduate");
-        Course math2 = new Course("2222222", "math2", 3, "Undergraduate").withPre(math1);
-        Course engMath = new Course("3333333", "engMath", 3, "Undergraduate").withPre(math2);
+    public void checkLoopWithoutLoopSimpleTest() {
+        Course math1 = mock(Course.class);
+        Course math2 = mock(Course.class);
 
+        when(math2.getPrerequisites()).thenReturn(new HashSet<>(Arrays.asList(math1)));
         ExceptionList exceptionList = new ExceptionList();
-        this.service.checkLoop(engMath, exceptionList);
-
+        this.service.checkLoop(math2, exceptionList);
         Assert.assertEquals(0, exceptionList.getExceptions().size());
     }
 
     @Test
-    public void checkLoopWithLoopTest() throws ExceptionList {
-        Course math1 = new Course("1111111", "math1", 3, "Undergraduate");
-        Course math2 = new Course("2222222", "math2", 3, "Undergraduate").withPre(math1);
-        math1.withPre(math2);
-        Course engMath = new Course("3333333", "engMath", 3, "Undergraduate").withPre(math2);
+    public void checkLoopWithoutLoopTest() {
+        Course math1 = mock(Course.class);
+        Course math2 = mock(Course.class);
+        Course engMath = mock(Course.class);
+
+        when(math2.getPrerequisites()).thenReturn(new HashSet<>(Arrays.asList(math1)));
+        when(engMath.getPrerequisites()).thenReturn(new HashSet<>(Arrays.asList(math2)));
 
         ExceptionList exceptionList = new ExceptionList();
         this.service.checkLoop(engMath, exceptionList);
-
-        Assert.assertEquals(1, exceptionList.getExceptions().size());
+        Assert.assertEquals(0, exceptionList.getExceptions().size());
     }
 
-    @AfterEach
-    public void tearDown(){
+    @Test
+    public void checkLoopWithLoopTest() {
+        Course math1 = mock(Course.class);
+        Course math2 = mock(Course.class);
+        Course engMath = mock(Course.class);
 
+        when(math2.getPrerequisites()).thenReturn(new HashSet<>(Arrays.asList(math1)));
+        when(math1.getPrerequisites()).thenReturn(new HashSet<>(Arrays.asList(math2)));
+        when(engMath.getPrerequisites()).thenReturn(new HashSet<>(Arrays.asList(math2)));
+
+        ExceptionList exceptionList = new ExceptionList();
+        this.service.checkLoop(engMath, exceptionList);
+        Assert.assertEquals(1, exceptionList.getExceptions().size());
     }
 
 }

@@ -16,7 +16,6 @@ public class AddCourseService {
     private final CourseRepository courseRepository;
     private final ProgramRepository programRepository;
 
-
     public Course addCourse(CourseMajorView input) throws ExceptionList {
         ExceptionList exceptionList = new ExceptionList();
         if (courseRepository.findCourseByCourseNumber(input.getCourseNumber()).isPresent())
@@ -90,4 +89,5 @@ public class AddCourseService {
         exceptions.addExceptions(exceptionList.getExceptions());
         return programs;
     }
+
 }
