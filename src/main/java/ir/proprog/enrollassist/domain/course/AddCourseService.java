@@ -66,7 +66,7 @@ public class AddCourseService {
         exceptionList.addExceptions(exceptions.getExceptions());
     }
 
-    private void checkLoop(Course prerequisite, ExceptionList exceptions) {
+    public void checkLoop(Course prerequisite, ExceptionList exceptions) {
         Stack<Course> courseStack = new Stack<>();
         List<Course> courseList = new ArrayList<>();
         courseStack.push(prerequisite);
