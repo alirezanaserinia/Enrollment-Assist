@@ -110,27 +110,27 @@ public class EnrollmentList {
         return violations;
     }
 
-    List<EnrollmentRuleViolation> checkValidGPALimit() {
+    public List<EnrollmentRuleViolation> checkValidGPALimit() {
         Grade GPA = owner.calculateGPA();
         GraduateLevel ownerGraduateLevel = owner.getGraduateLevel();
         int credits = sections.stream().mapToInt(section -> section.getCourse().getCredits()).sum();
-        List<EnrollmentRuleViolation> violations = new ArrayList<>();
-        if(credits < ownerGraduateLevel.getMinValidTermCredit())
-            violations.add(new MinCreditsRequiredNotMet(ownerGraduateLevel.getMinValidTermCredit()));
+        List<EnrollmentRuleViolation> violations = new ArrayList<>(); // 1
+        if(credits < ownerGraduateLevel.getMinValidTermCredit()) // (2,3) (2,4)
+            violations.add(new MinCreditsRequiredNotMet(ownerGraduateLevel.getMinValidTermCredit())); // 3
 
-        if (ownerGraduateLevel == GraduateLevel.Undergraduate) {
-            if(GPA.equals(Grade.ZERO) && owner.getTotalTakenCredits() == 0 && credits > 20)
-                violations.add(new MaxCreditsLimitExceeded(20));
-            else if (credits > 14 && GPA.isLessThan(12))
-                violations.add(new MaxCreditsLimitExceeded(14));
-            else if (credits > 20 && GPA.isLessThan(17))
-                violations.add(new MaxCreditsLimitExceeded(20));
+        if (ownerGraduateLevel == GraduateLevel.Undergraduate) { // (4,5) (4,11)
+            if(GPA.equals(Grade.ZERO) && owner.getTotalTakenCredits() == 0 && credits > 20) // (5,6) (5,7)
+                violations.add(new MaxCreditsLimitExceeded(20)); // 6
+            else if (credits > 14 && GPA.isLessThan(12)) // (7,8) (7,9)
+                violations.add(new MaxCreditsLimitExceeded(14)); // 8
+            else if (credits > 20 && GPA.isLessThan(17)) // (9,10) (9,11)
+                violations.add(new MaxCreditsLimitExceeded(20)); //10
         }
 
-        if (credits > ownerGraduateLevel.getMaxValidCredits())
-            violations.add(new MaxCreditsLimitExceeded(ownerGraduateLevel.getMaxValidCredits()));
+        if (credits > ownerGraduateLevel.getMaxValidCredits()) // (11,12) (11,13)
+            violations.add(new MaxCreditsLimitExceeded(ownerGraduateLevel.getMaxValidCredits())); // 12
 
-        return violations;
+        return violations; //13
     }
 
 
