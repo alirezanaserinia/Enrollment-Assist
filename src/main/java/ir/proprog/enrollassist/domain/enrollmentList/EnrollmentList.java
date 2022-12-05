@@ -134,21 +134,21 @@ public class EnrollmentList {
     }
 
 
-    List<EnrollmentRuleViolation> checkExamTimeConflicts() {
-        List<EnrollmentRuleViolation> violations = new ArrayList<>();
-        for (int i = 0; i < sections.size(); i++) {
-            Section s1 = sections.get(i);
-            if (s1.getExamTime() == null)
+    public List<EnrollmentRuleViolation> checkExamTimeConflicts() {
+        List<EnrollmentRuleViolation> violations = new ArrayList<>(); // 1
+        for (int i = 0; i < sections.size(); i++ /*13*/) { // 2 , (3,4) , (3,14)
+            Section s1 = sections.get(i); // 4
+            if (s1.getExamTime() == null) // (5,6) (5,13)
                 continue;
-            for (int j = i + 1; j < sections.size(); j++) {
-                Section s2 = sections.get(j);
-                if (s2.getExamTime() == null)
+            for (int j = i + 1; j < sections.size(); j++ /*12*/) { // 6 , (7,8) , (7,13)
+                Section s2 = sections.get(j); // 8
+                if (s2.getExamTime() == null) // (9,10) (9,12)
                     continue;
-                if (s1 != s2 && s1.getExamTime().hasTimeConflict(s2.getExamTime()))
-                    violations.add(new ExamTimeCollision(s1, s2));
+                if (s1 != s2 && s1.getExamTime().hasTimeConflict(s2.getExamTime())) // (10,11) (10,12)
+                    violations.add(new ExamTimeCollision(s1, s2)); // 11
             }
         }
-        return violations;
+        return violations; // 14
     }
 
     List<EnrollmentRuleViolation> checkSectionScheduleConflicts() {

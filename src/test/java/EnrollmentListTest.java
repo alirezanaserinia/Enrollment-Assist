@@ -13,11 +13,11 @@ import org.junit.runners.Parameterized;
 
 import java.util.*;
 
-@RunWith(value = Parameterized.class)
+// @RunWith(value = Parameterized.class)
 public class EnrollmentListTest {
 
     private EnrollmentList enrollmentList;
-    private String listName;
+    private String listName = "ali";
     private List<Course> courses;
     private List<ExamTime> examTimes;
     private List<PresentationSchedule> preScheds;
@@ -42,13 +42,15 @@ public class EnrollmentListTest {
                 .setGrade("11112", this.courses.get(0), 11.5);
 
         arman.addProgram(ceProgram);
+
+        enrollmentList = new EnrollmentList(listName, arman);
     }
 
-    public EnrollmentListTest(int expectedViolationsCounts, String listName, int[] testSections) throws Exception {
-        this.listName = listName;
-        this.testSections = testSections;
-        this.expectedViolationsCounts = expectedViolationsCounts;
-    }
+//    public EnrollmentListTest(int expectedViolationsCounts, String listName, int[] testSections) throws Exception {
+//        this.listName = listName;
+//        this.testSections = testSections;
+//        this.expectedViolationsCounts = expectedViolationsCounts;
+//    }
 
     private void setCourses() throws Exception {
         Course math1 = new Course("4444444", "MATH1", 3, "Undergraduate");
@@ -59,7 +61,8 @@ public class EnrollmentListTest {
         Course ap = new Course("2222222", "AP", 3, "Undergraduate").withPre(prog);
         Course maaref = new Course("5555555", "MAAREF", 2, "Undergraduate");
         Course farsi = new Course("1212121", "FA", 3, "Undergraduate");
-        this.courses = new ArrayList<Course>(Arrays.asList(math1, phys1, prog, math2, phys2, ap, maaref, farsi));
+        Course te = new Course("2121212", "TE", 2, "Undergraduate");
+        this.courses = new ArrayList<Course>(Arrays.asList(math1, phys1, prog, math2, phys2, ap, maaref, farsi, te));
     }
 
     private void setExamTimes() throws Exception {
@@ -71,7 +74,8 @@ public class EnrollmentListTest {
         ExamTime exam5 = new ExamTime("2021-07-15T09:00", "2021-07-15T11:00");
         ExamTime exam6 = new ExamTime("2021-07-16T09:00", "2021-07-16T11:00");
         ExamTime exam7 = new ExamTime("2021-07-17T09:00", "2021-07-17T11:00");
-        this.examTimes = new ArrayList<ExamTime>(Arrays.asList(exam0, exam1, exam2, exam3, exam4, exam5, exam6, exam7));
+        ExamTime exam8 = new ExamTime("2021-07-10T10:00", "2021-07-10T12:00");
+        this.examTimes = new ArrayList<ExamTime>(Arrays.asList(exam0, exam1, exam2, exam3, exam4, exam5, exam6, exam7, exam8));
     }
 
     private void setPreScheds() throws Exception {
@@ -119,29 +123,85 @@ public class EnrollmentListTest {
                 new HashSet<PresentationSchedule>(Arrays.asList(this.preScheds.get(13))));
         Section maaref_2 = new Section(this.courses.get(6), "10", this.examTimes.get(5),
                 new HashSet<PresentationSchedule>(Arrays.asList(this.preScheds.get(2))));
+        Section te_1 = new Section(this.courses.get(8), "10", this.examTimes.get(8),
+                new HashSet<PresentationSchedule>(Arrays.asList(this.preScheds.get(2))));
+        Section te_2 = new Section(this.courses.get(8), "10");
+        Section te_3 = new Section(this.courses.get(8), "10");
         this.sections = new ArrayList<Section>(Arrays.asList(math1_1, phys1_1, prog_1, math2_1,
-                math2_2, phys2_1, phys2_2, ap_1, farsi_1, maaref_1, maaref_2));
+                math2_2, phys2_1, phys2_2, ap_1, farsi_1, maaref_1, maaref_2, te_1, te_2, te_3));
     }
 
-    @Parameterized.Parameters
-    public static Collection<Object[]> parameters() throws Exception {
-        return Arrays.asList(new Object[][] {
-                {0, "goodList", new int[]{1, 2, 3, 8}},
-                {1, "CourseHasRequestedTwice", new int[]{1, 2, 8, 8}},
-                {1, "AlreadyPassedCourses", new int[]{0, 1, 2, 8}},
-                {2, "Prerequisites and ExamTimeConflicts", new int[]{2, 7, 8, 9}},
-                {1, "GPALimit", new int[]{1, 2, 3, 8, 9}},
-                {1, "SectionScheduleConflict", new int[]{1, 2, 3, 10}}
-        });
-    }
+//    @Parameterized.Parameters
+//    public static Collection<Object[]> parameters() throws Exception {
+//        return Arrays.asList(new Object[][] {
+//                {0, "goodList", new int[]{1, 2, 3, 8}},
+//                {1, "CourseHasRequestedTwice", new int[]{1, 2, 8, 8}},
+//                {1, "AlreadyPassedCourses", new int[]{0, 1, 2, 8}},
+//                {2, "Prerequisites and ExamTimeConflicts", new int[]{2, 7, 8, 9}},
+//                {1, "GPALimit", new int[]{1, 2, 3, 8, 9}},
+//                {1, "SectionScheduleConflict", new int[]{1, 2, 3, 10}}
+//        });
+//    }
 
+//    @Test
+//    public void checkEnrollmentRulesTest() throws Exception {
+//        enrollmentList = new EnrollmentList(listName, arman);
+//        for (int sec : testSections)
+//            enrollmentList.addSection(this.sections.get(sec));
+//
+//        List<EnrollmentRuleViolation> violations = enrollmentList.checkEnrollmentRules();
+//        Assert.assertEquals(expectedViolationsCounts, violations.size());
+//    }
+
+    // test path : [1,2,3,14]
     @Test
-    public void checkEnrollmentRulesTest() throws Exception {
-        enrollmentList = new EnrollmentList(listName, arman);
-        for (int sec : testSections)
-            enrollmentList.addSection(this.sections.get(sec));
+    public void checkExamTimeConflictsPrimePath1Test() {
+        expectedViolationsCounts = 0;
+        List<EnrollmentRuleViolation> violations = enrollmentList.checkExamTimeConflicts();
+        Assert.assertEquals(expectedViolationsCounts, violations.size());
+    }
 
-        List<EnrollmentRuleViolation> violations = enrollmentList.checkEnrollmentRules();
+    // test path : [1,2,3,4,5,6,7,13,3,14]
+    @Test
+    public void checkExamTimeConflictsPrimePath2Test(){
+        expectedViolationsCounts = 0;
+        enrollmentList.addSection(this.sections.get(0));
+        List<EnrollmentRuleViolation> violations = enrollmentList.checkExamTimeConflicts();
+        Assert.assertEquals(expectedViolationsCounts, violations.size());
+    }
+
+    // test path : [1,2,3,4,5,6,7,8,9,10,11,12,7,13,3,4,5,6,7,13,3,14]
+    @Test
+    public void checkExamTimeConflictsPrimePath3Test() {
+        expectedViolationsCounts = 1;
+        enrollmentList.addSection(this.sections.get(0));
+        enrollmentList.addSection(this.sections.get(11));
+        List<EnrollmentRuleViolation> violations = enrollmentList.checkExamTimeConflicts();
+        Assert.assertEquals(expectedViolationsCounts, violations.size());
+    }
+
+    // test path : [1,2,3,4,5,6,7,8,9,10,12,7,8,9,12,7,13,3,4,5,6,7,8,9,12,7,13,3,4,5,13,3,14]
+    @Test
+    public void checkExamTimeConflictsPrimePath4Test() {
+        expectedViolationsCounts = 0;
+        enrollmentList.addSection(this.sections.get(0));
+        enrollmentList.addSection(this.sections.get(1));
+        enrollmentList.addSection(this.sections.get(12));
+
+        List<EnrollmentRuleViolation> violations = enrollmentList.checkExamTimeConflicts();
+        Assert.assertEquals(expectedViolationsCounts, violations.size());
+    }
+
+    // test path : [1,2,3,4,5,6,7,8,9,12,7,8,9,10,11,12,7,8,9,12,7,13,3,4,5,13,3,4,5,6,7,8,9,12,7,13,3,4,5,13,3,14]
+    @Test
+    public void checkExamTimeConflictsPrimePath5Test(){
+        expectedViolationsCounts = 1;
+        enrollmentList.addSection(this.sections.get(0));
+        enrollmentList.addSection(this.sections.get(12));
+        enrollmentList.addSection(this.sections.get(11));
+        enrollmentList.addSection(this.sections.get(13));
+
+        List<EnrollmentRuleViolation> violations = enrollmentList.checkExamTimeConflicts();
         Assert.assertEquals(expectedViolationsCounts, violations.size());
     }
 
