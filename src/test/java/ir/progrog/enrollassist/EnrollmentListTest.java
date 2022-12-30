@@ -1,3 +1,5 @@
+package ir.progrog.enrollassist;
+
 import ir.proprog.enrollassist.Exception.ExceptionList;
 import ir.proprog.enrollassist.domain.EnrollmentRules.EnrollmentRuleViolation;
 import ir.proprog.enrollassist.domain.EnrollmentRules.MaxCreditsLimitExceeded;
@@ -133,57 +135,6 @@ public class EnrollmentListTest {
                 math2_2, phys2_1, phys2_2, ap_1, farsi_1, maaref_1, maaref_2, te_1, te_2, te_3, sangin_1, sangin_2, sangin_3, sangin_4));
     }
 
-    // test path : [1,2,3,14]
-    @Test
-    public void checkExamTimeConflictsPrimePath1Test() {
-        expectedViolationsCounts = 0;
-        List<EnrollmentRuleViolation> violations = enrollmentList.checkExamTimeConflicts();
-        Assert.assertEquals(expectedViolationsCounts, violations.size());
-    }
-
-    // test path : [1,2,3,4,5,6,7,13,3,14]
-    @Test
-    public void checkExamTimeConflictsPrimePath2Test() {
-        expectedViolationsCounts = 0;
-        enrollmentList.addSection(this.sections.get(0));
-        List<EnrollmentRuleViolation> violations = enrollmentList.checkExamTimeConflicts();
-        Assert.assertEquals(expectedViolationsCounts, violations.size());
-    }
-
-    // test path : [1,2,3,4,5,6,7,8,9,10,11,12,7,13,3,4,5,6,7,13,3,14]
-    @Test
-    public void checkExamTimeConflictsPrimePath3Test() {
-        expectedViolationsCounts = 1;
-        enrollmentList.addSection(this.sections.get(0));
-        enrollmentList.addSection(this.sections.get(11));
-        List<EnrollmentRuleViolation> violations = enrollmentList.checkExamTimeConflicts();
-        Assert.assertEquals(expectedViolationsCounts, violations.size());
-    }
-
-    // test path : [1,2,3,4,5,6,7,8,9,10,12,7,8,9,12,7,13,3,4,5,6,7,8,9,12,7,13,3,4,5,13,3,14]
-    @Test
-    public void checkExamTimeConflictsPrimePath4Test() {
-        expectedViolationsCounts = 0;
-        enrollmentList.addSection(this.sections.get(0));
-        enrollmentList.addSection(this.sections.get(1));
-        enrollmentList.addSection(this.sections.get(12));
-
-        List<EnrollmentRuleViolation> violations = enrollmentList.checkExamTimeConflicts();
-        Assert.assertEquals(expectedViolationsCounts, violations.size());
-    }
-
-    // test path : [1,2,3,4,5,6,7,8,9,12,7,8,9,10,11,12,7,8,9,12,7,13,3,4,5,13,3,4,5,6,7,8,9,12,7,13,3,4,5,13,3,14]
-    @Test
-    public void checkExamTimeConflictsPrimePath5Test() {
-        expectedViolationsCounts = 1;
-        enrollmentList.addSection(this.sections.get(0));
-        enrollmentList.addSection(this.sections.get(12));
-        enrollmentList.addSection(this.sections.get(11));
-        enrollmentList.addSection(this.sections.get(13));
-
-        List<EnrollmentRuleViolation> violations = enrollmentList.checkExamTimeConflicts();
-        Assert.assertEquals(expectedViolationsCounts, violations.size());
-    }
 
     // test path : [1,2,3,4,11,13]
     @Test
