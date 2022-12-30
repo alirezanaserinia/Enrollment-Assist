@@ -128,6 +128,24 @@
                     <targetTests>
                         <param>ir.progrog.enrollassist.EnrollmentListTest</param>
                     </targetTests>
+                    <excludedMethods>
+                        <param>getId</param>
+                        <param>getListName</param>
+                        <param>getOwner</param>
+                        <param>getSections</param>
+                        <param>isValid</param>
+                        <param>clear</param>
+                        <param>equals</param>
+                        <param>hashCode</param>
+                        <param>checkEnrollmentRules</param>
+                        <param>checkNoCourseHasRequestedTwice</param>
+                        <param>checkHasNotAlreadyPassedCourses</param>
+                        <param>checkHasPassedAllPrerequisites</param>
+                        <param>checkExamTimeConflicts</param>
+                        <param>checkSectionScheduleConflicts</param>
+                        <param>makeExamTimeConflict</param>
+                        <param>makePresentationScheduleConflict</param>
+                    </excludedMethods>
                 </configuration>
                 <dependencies>
                     <dependency>
