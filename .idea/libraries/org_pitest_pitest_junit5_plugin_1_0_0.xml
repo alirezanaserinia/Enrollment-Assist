@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="org.pitest:pitest-junit5-plugin:1.0.0" type="repository">
+    <properties maven-id="org.pitest:pitest-junit5-plugin:1.0.0" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/pitest/pitest-junit5-plugin/1.0.0/pitest-junit5-plugin-1.0.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

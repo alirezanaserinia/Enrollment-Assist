@@ -133,58 +133,6 @@ public class EnrollmentListTest {
                 math2_2, phys2_1, phys2_2, ap_1, farsi_1, maaref_1, maaref_2, te_1, te_2, te_3, sangin_1, sangin_2, sangin_3, sangin_4));
     }
 
-    // test path : [1,2,3,14]
-    @Test
-    public void checkExamTimeConflictsPrimePath1Test() {
-        expectedViolationsCounts = 0;
-        List<EnrollmentRuleViolation> violations = enrollmentList.checkExamTimeConflicts();
-        Assert.assertEquals(expectedViolationsCounts, violations.size());
-    }
-
-    // test path : [1,2,3,4,5,6,7,13,3,14]
-    @Test
-    public void checkExamTimeConflictsPrimePath2Test() {
-        expectedViolationsCounts = 0;
-        enrollmentList.addSection(this.sections.get(0));
-        List<EnrollmentRuleViolation> violations = enrollmentList.checkExamTimeConflicts();
-        Assert.assertEquals(expectedViolationsCounts, violations.size());
-    }
-
-    // test path : [1,2,3,4,5,6,7,8,9,10,11,12,7,13,3,4,5,6,7,13,3,14]
-    @Test
-    public void checkExamTimeConflictsPrimePath3Test() {
-        expectedViolationsCounts = 1;
-        enrollmentList.addSection(this.sections.get(0));
-        enrollmentList.addSection(this.sections.get(11));
-        List<EnrollmentRuleViolation> violations = enrollmentList.checkExamTimeConflicts();
-        Assert.assertEquals(expectedViolationsCounts, violations.size());
-    }
-
-    // test path : [1,2,3,4,5,6,7,8,9,10,12,7,8,9,12,7,13,3,4,5,6,7,8,9,12,7,13,3,4,5,13,3,14]
-    @Test
-    public void checkExamTimeConflictsPrimePath4Test() {
-        expectedViolationsCounts = 0;
-        enrollmentList.addSection(this.sections.get(0));
-        enrollmentList.addSection(this.sections.get(1));
-        enrollmentList.addSection(this.sections.get(12));
-
-        List<EnrollmentRuleViolation> violations = enrollmentList.checkExamTimeConflicts();
-        Assert.assertEquals(expectedViolationsCounts, violations.size());
-    }
-
-    // test path : [1,2,3,4,5,6,7,8,9,12,7,8,9,10,11,12,7,8,9,12,7,13,3,4,5,13,3,4,5,6,7,8,9,12,7,13,3,4,5,13,3,14]
-    @Test
-    public void checkExamTimeConflictsPrimePath5Test() {
-        expectedViolationsCounts = 1;
-        enrollmentList.addSection(this.sections.get(0));
-        enrollmentList.addSection(this.sections.get(12));
-        enrollmentList.addSection(this.sections.get(11));
-        enrollmentList.addSection(this.sections.get(13));
-
-        List<EnrollmentRuleViolation> violations = enrollmentList.checkExamTimeConflicts();
-        Assert.assertEquals(expectedViolationsCounts, violations.size());
-    }
-
     // test path : [1,2,3,4,11,13]
     @Test
     public void checkValidGPALimitTestWhenGraduateLevelIsNotUndergraduatedAndCreditsIsLessThanMinValidTermCredit() throws Exception {
@@ -206,6 +154,28 @@ public class EnrollmentListTest {
         Assert.assertEquals(expectedViolations.get(0).toString(), violations.get(0).toString());
     }
 
+    @Test
+    public void checkValidGPALimitTestWhenGraduateLevelIsNotUndergraduatedAndCreditsIsEqualToMinValidTermCredit() throws Exception {
+        ceProgram = new Program(ce, "Masters", 40, 40, "Major");
+        Course math1 = new Course("4444444", "MATH1", 3, "Masters");
+        Course phys1 = new Course("8888888", "PHYS1", 3, "Masters");
+        Course prog = new Course("7777777", "PROG", 4, "Masters");
+        ceProgram.addCourse(math1, phys1, prog);
+
+        arman = new Student("810101999", "Masters")
+                .setGrade("11112", math1, 11.5);
+
+        arman.addProgram(ceProgram);
+        enrollmentList = new EnrollmentList(listName, arman);
+        enrollmentList.addSection(this.sections.get(1));
+        enrollmentList.addSection(this.sections.get(3));
+        enrollmentList.addSection(this.sections.get(9));
+
+        List<EnrollmentRuleViolation> expectedViolations = new ArrayList<>();
+        List<EnrollmentRuleViolation> violations = enrollmentList.checkValidGPALimit();
+        Assert.assertEquals(expectedViolations.size(), violations.size());
+    }
+
     // test path : [1,2,4,5,7,9,11,13]
     @Test
     public void checkValidGPALimitTestWhenGraduateLevelIsUndergraduated() {
@@ -225,16 +195,34 @@ public class EnrollmentListTest {
         var ali = new Student("810101888", "Undergraduate");
         ali.addProgram(ceProgram);
         enrollmentList = new EnrollmentList(listName, ali);
-        enrollmentList.addSection(this.sections.get(1));
-        enrollmentList.addSection(this.sections.get(2));
-        enrollmentList.addSection(this.sections.get(3));
-        enrollmentList.addSection(this.sections.get(8));
-        enrollmentList.addSection(this.sections.get(14));
-        enrollmentList.addSection(this.sections.get(15));
-        enrollmentList.addSection(this.sections.get(16));
-        enrollmentList.addSection(this.sections.get(17));
+        enrollmentList.addSection(this.sections.get(1)); //3
+        enrollmentList.addSection(this.sections.get(2)); // 4
+        enrollmentList.addSection(this.sections.get(3)); //3
+        enrollmentList.addSection(this.sections.get(8)); //3
+        enrollmentList.addSection(this.sections.get(14));//4
+        enrollmentList.addSection(this.sections.get(15));//4
+        enrollmentList.addSection(this.sections.get(16));//4
+        enrollmentList.addSection(this.sections.get(17));//4
 
         expectedViolationsCounts = 2;
+        List<EnrollmentRuleViolation> violations = enrollmentList.checkValidGPALimit();
+        Assert.assertEquals(expectedViolationsCounts, violations.size());
+    }
+
+    @Test
+    public void checkValidGPALimitTestWhenFisrtSemesterAndCreditIsEqualTo20() throws Exception {
+        var ali = new Student("810101888", "Undergraduate");
+        ali.addProgram(ceProgram);
+        enrollmentList = new EnrollmentList(listName, ali);
+        enrollmentList.addSection(this.sections.get(2)); // 4
+        enrollmentList.addSection(this.sections.get(14));//4
+        enrollmentList.addSection(this.sections.get(15));//4
+        enrollmentList.addSection(this.sections.get(16));//4
+        enrollmentList.addSection(this.sections.get(17));//4
+        enrollmentList.addSection(this.sections.get(9));//2
+        enrollmentList.addSection(this.sections.get(11));//2
+
+        expectedViolationsCounts = 1;
         List<EnrollmentRuleViolation> violations = enrollmentList.checkValidGPALimit();
         Assert.assertEquals(expectedViolationsCounts, violations.size());
     }
@@ -251,6 +239,32 @@ public class EnrollmentListTest {
         expectedViolations.add(new MaxCreditsLimitExceeded(14));
         List<EnrollmentRuleViolation> violations = enrollmentList.checkValidGPALimit();
         Assert.assertEquals(expectedViolations.get(0).toString(), violations.get(0).toString());
+    }
+
+    @Test
+    public void checkValidGPALimitTestWhenCreditIsEqualTo14AndGpaIsLessThan12() {
+        enrollmentList.addSection(this.sections.get(14)); //4
+        enrollmentList.addSection(this.sections.get(15)); //4
+        enrollmentList.addSection(this.sections.get(16)); //4
+        enrollmentList.addSection(this.sections.get(9)); //2
+
+        List<EnrollmentRuleViolation> expectedViolations = new ArrayList<>();
+        List<EnrollmentRuleViolation> violations = enrollmentList.checkValidGPALimit();
+        Assert.assertEquals(expectedViolations.size(), violations.size());
+    }
+
+    @Test
+    public void checkValidGPALimitTestWhenCreditIsEqualTo20AndGpaIsLessThan17() throws ExceptionList {
+        arman.setGrade("11113", this.courses.get(3), 16);
+        enrollmentList.addSection(this.sections.get(2));  //4
+        enrollmentList.addSection(this.sections.get(14)); //4
+        enrollmentList.addSection(this.sections.get(15)); //4
+        enrollmentList.addSection(this.sections.get(16)); //4
+        enrollmentList.addSection(this.sections.get(17)); //4
+
+        List<EnrollmentRuleViolation> expectedViolations = new ArrayList<>();
+        List<EnrollmentRuleViolation> violations = enrollmentList.checkValidGPALimit();
+        Assert.assertEquals(expectedViolations.size(), violations.size());
     }
 
     // test path : [1,2,4,5,7,9,10,11,13]
