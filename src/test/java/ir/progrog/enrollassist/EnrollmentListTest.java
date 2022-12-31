@@ -157,6 +157,28 @@ public class EnrollmentListTest {
         Assert.assertEquals(expectedViolations.get(0).toString(), violations.get(0).toString());
     }
 
+    @Test
+    public void checkValidGPALimitTestWhenGraduateLevelIsNotUndergraduatedAndCreditsIsEqualToMinValidTermCredit() throws Exception {
+        ceProgram = new Program(ce, "Masters", 40, 40, "Major");
+        Course math1 = new Course("4444444", "MATH1", 3, "Masters");
+        Course phys1 = new Course("8888888", "PHYS1", 3, "Masters");
+        Course prog = new Course("7777777", "PROG", 4, "Masters");
+        ceProgram.addCourse(math1, phys1, prog);
+
+        arman = new Student("810101999", "Masters")
+                .setGrade("11112", math1, 11.5);
+
+        arman.addProgram(ceProgram);
+        enrollmentList = new EnrollmentList(listName, arman);
+        enrollmentList.addSection(this.sections.get(1));
+        enrollmentList.addSection(this.sections.get(3));
+        enrollmentList.addSection(this.sections.get(9));
+
+        List<EnrollmentRuleViolation> expectedViolations = new ArrayList<>();
+        List<EnrollmentRuleViolation> violations = enrollmentList.checkValidGPALimit();
+        Assert.assertEquals(expectedViolations.size(), violations.size());
+    }
+
     // test path : [1,2,4,5,7,9,11,13]
     @Test
     public void checkValidGPALimitTestWhenGraduateLevelIsUndergraduated() {
