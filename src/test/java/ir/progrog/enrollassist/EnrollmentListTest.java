@@ -198,16 +198,34 @@ public class EnrollmentListTest {
         var ali = new Student("810101888", "Undergraduate");
         ali.addProgram(ceProgram);
         enrollmentList = new EnrollmentList(listName, ali);
-        enrollmentList.addSection(this.sections.get(1));
-        enrollmentList.addSection(this.sections.get(2));
-        enrollmentList.addSection(this.sections.get(3));
-        enrollmentList.addSection(this.sections.get(8));
-        enrollmentList.addSection(this.sections.get(14));
-        enrollmentList.addSection(this.sections.get(15));
-        enrollmentList.addSection(this.sections.get(16));
-        enrollmentList.addSection(this.sections.get(17));
+        enrollmentList.addSection(this.sections.get(1)); //3
+        enrollmentList.addSection(this.sections.get(2)); // 4
+        enrollmentList.addSection(this.sections.get(3)); //3
+        enrollmentList.addSection(this.sections.get(8)); //3
+        enrollmentList.addSection(this.sections.get(14));//4
+        enrollmentList.addSection(this.sections.get(15));//4
+        enrollmentList.addSection(this.sections.get(16));//4
+        enrollmentList.addSection(this.sections.get(17));//4
 
         expectedViolationsCounts = 2;
+        List<EnrollmentRuleViolation> violations = enrollmentList.checkValidGPALimit();
+        Assert.assertEquals(expectedViolationsCounts, violations.size());
+    }
+
+    @Test
+    public void checkValidGPALimitTestWhenFisrtSemesterAndCreditIsEqualTo20() throws Exception {
+        var ali = new Student("810101888", "Undergraduate");
+        ali.addProgram(ceProgram);
+        enrollmentList = new EnrollmentList(listName, ali);
+        enrollmentList.addSection(this.sections.get(2)); // 4
+        enrollmentList.addSection(this.sections.get(14));//4
+        enrollmentList.addSection(this.sections.get(15));//4
+        enrollmentList.addSection(this.sections.get(16));//4
+        enrollmentList.addSection(this.sections.get(17));//4
+        enrollmentList.addSection(this.sections.get(9));//2
+        enrollmentList.addSection(this.sections.get(11));//2
+
+        expectedViolationsCounts = 1;
         List<EnrollmentRuleViolation> violations = enrollmentList.checkValidGPALimit();
         Assert.assertEquals(expectedViolationsCounts, violations.size());
     }
