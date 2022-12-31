@@ -155,6 +155,41 @@ public class EnrollmentListTest {
     }
 
     @Test
+    public void checkValidGPALimitTestWhenGraduateLevelIsNotUndergraduatedAndCreditsIsMoreThanMaxValidTermCredit() throws Exception {
+        ceProgram = new Program(ce, "Masters", 40, 40, "Major");
+        Course math1 = new Course("4444444", "MATH1", 3, "Masters");
+        Course phys1 = new Course("8888888", "PHYS1", 3, "Masters");
+        Course prog = new Course("7777777", "PROG", 4, "Masters");
+        Course cn = new Course("6666666", "CN", 3, "Masters");
+
+        ceProgram.addCourse(math1, phys1, prog, cn);
+
+        arman = new Student("810101999", "Masters");
+
+        arman.addProgram(ceProgram);
+        enrollmentList = new EnrollmentList(listName, arman);
+
+        Section math1_1 = new Section(math1, "01", this.examTimes.get(0),
+                new HashSet<PresentationSchedule>(Arrays.asList(this.preScheds.get(0))));
+        Section phys1_1 = new Section(phys1, "01", this.examTimes.get(1),
+                new HashSet<PresentationSchedule>(Arrays.asList(this.preScheds.get(1))));
+        Section prog_1  = new Section(prog, "01", this.examTimes.get(2),
+                new HashSet<PresentationSchedule>(Arrays.asList(this.preScheds.get(2))));
+        Section cn_1 = new Section(cn, "01", this.examTimes.get(3),
+                new HashSet<PresentationSchedule>(Arrays.asList(this.preScheds.get(3))));
+
+        enrollmentList.addSection(math1_1);
+        enrollmentList.addSection(phys1_1);
+        enrollmentList.addSection(prog_1);
+        enrollmentList.addSection(cn_1);
+
+        List<EnrollmentRuleViolation> expectedViolations = new ArrayList<>();
+        expectedViolations.add(new MaxCreditsLimitExceeded(arman.getGraduateLevel().getMaxValidCredits()));
+        List<EnrollmentRuleViolation> violations = enrollmentList.checkValidGPALimit();
+        Assert.assertEquals(expectedViolations.get(0).toString(), violations.get(0).toString());
+    }
+
+    @Test
     public void checkValidGPALimitTestWhenGraduateLevelIsNotUndergraduatedAndCreditsIsEqualToMinValidTermCredit() throws Exception {
         ceProgram = new Program(ce, "Masters", 40, 40, "Major");
         Course math1 = new Course("4444444", "MATH1", 3, "Masters");
@@ -196,21 +231,38 @@ public class EnrollmentListTest {
         ali.addProgram(ceProgram);
         enrollmentList = new EnrollmentList(listName, ali);
         enrollmentList.addSection(this.sections.get(1)); //3
-        enrollmentList.addSection(this.sections.get(2)); // 4
+        enrollmentList.addSection(this.sections.get(2)); //4
         enrollmentList.addSection(this.sections.get(3)); //3
         enrollmentList.addSection(this.sections.get(8)); //3
+        enrollmentList.addSection(this.sections.get(14));//4
+        enrollmentList.addSection(this.sections.get(15));//4
+
+        List<EnrollmentRuleViolation> expectedViolations = new ArrayList<>();
+        expectedViolations.add(new MaxCreditsLimitExceeded(20));
+        List<EnrollmentRuleViolation> violations = enrollmentList.checkValidGPALimit();
+        Assert.assertEquals(expectedViolations.get(0).toString(), violations.get(0).toString());
+    }
+
+    @Test
+    public void checkValidGPALimitTestWhenFisrtSemesterAndCreditIsEqualTo20() throws Exception {
+        var ali = new Student("810101888", "Undergraduate");
+        ali.addProgram(ceProgram);
+        enrollmentList = new EnrollmentList(listName, ali);
+        enrollmentList.addSection(this.sections.get(2)); // 4
         enrollmentList.addSection(this.sections.get(14));//4
         enrollmentList.addSection(this.sections.get(15));//4
         enrollmentList.addSection(this.sections.get(16));//4
         enrollmentList.addSection(this.sections.get(17));//4
 
-        expectedViolationsCounts = 2;
+
+        List<EnrollmentRuleViolation> expectedViolations = new ArrayList<>();
+        expectedViolations.add(new MaxCreditsLimitExceeded(14));
         List<EnrollmentRuleViolation> violations = enrollmentList.checkValidGPALimit();
-        Assert.assertEquals(expectedViolationsCounts, violations.size());
+        Assert.assertEquals(expectedViolations.get(0).toString(), violations.get(0).toString());
     }
 
     @Test
-    public void checkValidGPALimitTestWhenFisrtSemesterAndCreditIsEqualTo20() throws Exception {
+    public void checkValidGPALimitTestWhenFisrtSemesterAndCreditIsEqualTo24() throws Exception {
         var ali = new Student("810101888", "Undergraduate");
         ali.addProgram(ceProgram);
         enrollmentList = new EnrollmentList(listName, ali);
