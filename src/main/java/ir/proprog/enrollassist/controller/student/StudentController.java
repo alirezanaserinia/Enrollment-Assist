@@ -57,10 +57,8 @@ public class StudentController {
             newStudent = new Student(studentView.getStudentNo().getNumber(), studentView.getGraduateLevel().toString());
             Program program= programRepository.findAll().iterator().next();
             newStudent.addProgram(program);
-        } catch (ExceptionList exceptionList) {
+        } catch (Exception exceptionList) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exceptionList.toString());
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.toString());
         }
         user.addStudent(newStudent);
         studentRepository.save(newStudent);
