@@ -4,6 +4,7 @@ import ir.proprog.enrollassist.Exception.ExceptionList;
 import ir.proprog.enrollassist.controller.section.SectionView;
 import ir.proprog.enrollassist.controller.student.StudentView;
 import ir.proprog.enrollassist.domain.major.Major;
+import ir.proprog.enrollassist.domain.program.Program;
 import ir.proprog.enrollassist.domain.section.Section;
 import ir.proprog.enrollassist.domain.student.Student;
 import ir.proprog.enrollassist.domain.student.StudentNumber;
@@ -28,6 +29,7 @@ public class StudentController {
     private SectionRepository sectionRepository;
     private EnrollmentListRepository enrollmentListRepository;
     private UserRepository userRepository;
+    private ProgramRepository programRepository;
 
     @GetMapping("/all")
     public Iterable<StudentView> all() {
@@ -53,8 +55,12 @@ public class StudentController {
         Student newStudent;
         try {
             newStudent = new Student(studentView.getStudentNo().getNumber(), studentView.getGraduateLevel().toString());
+            Program program= programRepository.findAll().iterator().next();
+            newStudent.addProgram(program);
         } catch (ExceptionList exceptionList) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exceptionList.toString());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.toString());
         }
         user.addStudent(newStudent);
         studentRepository.save(newStudent);

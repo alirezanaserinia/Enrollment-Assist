@@ -37,7 +37,7 @@ public class DataInitializer {
         Course dm = new Course("3333333", "DM", 3, "Undergraduate").withPre(math1);
         Course economy = new Course("1111111", "ECO", 3, "Undergraduate");
         Course maaref = new Course("5555555", "MAAREF", 2, "Undergraduate");
-        Course farsi = new Course("1212121", "FA", 2, "Undergraduate");
+        Course farsi = new Course("1212121", "FA", 3, "Undergraduate");
         Course english = new Course("1010101", "EN", 2, "Undergraduate");
         Course akhlagh = new Course("1111110", "AKHLAGH", 2, "Undergraduate");
         Course karafarini = new Course("1313131", "KAR", 3, "Undergraduate");
@@ -92,6 +92,9 @@ public class DataInitializer {
         Section dm_1 = new Section(dm, "01", exam7, Collections.emptySet()); sectionRepository.save(dm_1);
         Section akhlagh_1 = new Section(akhlagh, "01" ,exam0, Collections.emptySet()); sectionRepository.save(akhlagh_1);
         Section english_1 = new Section(english, "01", exam1, Collections.emptySet()); sectionRepository.save(english_1);
+        Section karafarini_1 = new Section(karafarini, "01", exam2, Collections.emptySet()); sectionRepository.save(karafarini_1);
+        Section farsi_1 = new Section(farsi, "01", exam3, Collections.emptySet()); sectionRepository.save(farsi_1);
+        Section maaref_1 = new Section(maaref, "01", exam7, Collections.emptySet()); sectionRepository.save(maaref_1);
         // Section buggy = new Section(null, "01"); //sectionRepository.save(buggy);
 
         EnrollmentList mahsaList = new EnrollmentList("Mahsa's List", mahsa);

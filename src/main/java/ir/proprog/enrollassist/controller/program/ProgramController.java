@@ -22,6 +22,7 @@ public class ProgramController {
     private ProgramRepository programRepository;
     private MajorRepository majorRepository;
 
+
     @GetMapping
     public Iterable<ProgramView> all() {
         return StreamSupport.stream(programRepository.findAll().spliterator(), false).map(ProgramView::new).collect(Collectors.toList());
