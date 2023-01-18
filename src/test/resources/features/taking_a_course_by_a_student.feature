@@ -1,10 +1,16 @@
 Feature: Taking a course by a student
-  The company follows a policy of adding and removing passengers,
-  depending on the passenger type and on the flight type
 
-  Scenario: a course can be taken by a student
-    Given There exists a Undergraduate student with studentNo 810198530
-    And Passed math1, physics1, farsi, english and karafarini
-    And There exists a course with Id 42
-    When  the student wants to take the course
-    Then The list of unpassed prerequisite courses return
+  Scenario: taking a course with passed prerequisite
+    Given There exists a student
+    And There exists a course with some prerequisite courses
+    And the student has passed all prerequisites of the course
+    When the student wants to take the course
+    Then the student can take the course
+
+
+  Scenario: taking a course with unpassed prerequisite
+    Given There exists a student
+    And There exists a course with some prerequisite courses
+    And the student has not passed all prerequisites of the course
+    When the student wants to take the course
+    Then the student can not take the course

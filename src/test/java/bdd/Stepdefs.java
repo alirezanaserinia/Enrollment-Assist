@@ -27,7 +27,9 @@ import io.cucumber.java.Before;
 import io.cucumber.java.BeforeAll;
 import io.cucumber.java.PendingException;
 import ir.proprog.enrollassist.Exception.ExceptionList;
+import ir.proprog.enrollassist.domain.EnrollmentRules.EnrollmentRuleViolation;
 import ir.proprog.enrollassist.domain.course.Course;
+import ir.proprog.enrollassist.domain.course.CourseNumber;
 import ir.proprog.enrollassist.domain.major.Major;
 import ir.proprog.enrollassist.domain.program.Program;
 import ir.proprog.enrollassist.domain.student.Student;
@@ -38,70 +40,71 @@ import org.junit.jupiter.api.BeforeEach;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class Stepdefs {
-    private StudentRepository studentRepository;
     private Student student;
     private List<Course> courses;
+    private Course wantedCourse;
     private Program ceProgram;
     private Major ce;
-//    private int expectedViolationsCounts;
-    @Before
+    private List<EnrollmentRuleViolation> actualVioalationList;
+
     public void setup() throws Exception {
-        System.out.println("In Before method");
         setCourses();
         ce = new Major("8101", "CE", "Engineering");
         ceProgram = new Program(ce, "Undergraduate", 140, 140, "Major");
         ceProgram.addCourse(this.courses.get(0), this.courses.get(3), this.courses.get(2), this.courses.get(5));
-        //enrollmentList = new EnrollmentList(listName, arman);
     }
 
-    @Given("^There exists a Undergraduate student with studentNo (\\d+)$")
-    public void there_exists_a_Master_student_with_studentNo(int studentNumber) throws Exception {
-        // Write code here that turns the phrase above into concrete action
-        student = new Student(Integer.toString(studentNumber), "Undergraduate");
-        if (student==null)
-            System.out.println("NO No NO\n");
-        //student.addProgram(ceProgram);
-        if (ceProgram==null)
-            System.out.println("NO No NO\n");
-        assertTrue(true);
-    }
-//"^Passed math(\\d+), physics(\\d+), farsi, english and karafarini$"
-    @Given("^Passed math(\\d+), physics(\\d+), farsi, english and karafarini$")
-    public void passed_math_physics_farsi_english_and_karafarini(int arg1,int arg2) throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-//        student.setGrade("11112", courses.get(0), 10)
-//                .setGrade("11112", courses.get(1), 12)
-//                .setGrade("11112", courses.get(7), 16.3)
-//                .setGrade("11112", courses.get(9), 18.5)
-//                .setGrade("11112", courses.get(10), 15);
-        assertTrue(true);
+    @Given("^There exists a student$")
+    public void there_exists_a_student() throws Throwable {
+        student = new Student("810198530", "Undergraduate");
     }
 
-    @Given("^There exists a course with Id (\\d+)$")
-    public void there_exists_a_course_with_Id(int arg1) throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        //throw new PendingException();
-        assertTrue(true);
+    @Given("^There exists a course with some prerequisite courses$")
+    public void there_exists_a_course_with_some_prerequisite_courses() throws Throwable {
+        setup();
+        student.addProgram(ceProgram);
     }
 
+    @Given("^the student has passed all prerequisites of the course$")
+    public void the_student_has_passed_all_prerequisites_of_the_course() throws Throwable {
+        student.setGrade("11112", courses.get(0), 10)
+                .setGrade("11112", courses.get(1), 12)
+                .setGrade("11112", courses.get(7), 16.3)
+                .setGrade("11112", courses.get(9), 18.5)
+                .setGrade("11112", courses.get(10), 15);
+        wantedCourse= courses.get(4);
+    }
     @When("^the student wants to take the course$")
     public void the_student_wants_to_take_the_course() throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        //throw new PendingException();
         assertTrue(true);
     }
 
-    @Then("^The list of unpassed prerequisite courses return$")
-    public void the_list_of_unpassed_prerequisite_courses_return() throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        //throw new PendingException();
-        assertTrue(true);
+    @Then("^the student can take the course$")
+    public void the_student_can_take_the_course() throws Throwable {
+        actualVioalationList= wantedCourse.canBeTakenBy(student);
+        assertEquals(0,actualVioalationList.size());
     }
 
+    @Given("^the student has not passed all prerequisites of the course$")
+    public void the_student_has_not_passed_all_prerequisites_of_the_course() throws Throwable {
+        student.setGrade("11112", courses.get(0), 10)
+                .setGrade("11112", courses.get(1), 12)
+                .setGrade("11112", courses.get(7), 16.3)
+                .setGrade("11112", courses.get(9), 18.5)
+                .setGrade("11112", courses.get(10), 15);
+        wantedCourse= courses.get(5);
+    }
+
+    @Then("^the student can not take the course$")
+    public void the_student_can_not_take_the_course() throws Throwable {
+        actualVioalationList= wantedCourse.canBeTakenBy(student);
+        assertEquals(1,actualVioalationList.size());
+    }
     private void setCourses() throws Exception {
         Course math1 = new Course("4444444", "MATH1", 3, "Undergraduate");
         Course phys1 = new Course("8888888", "PHYS1", 3, "Undergraduate");
