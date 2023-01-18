@@ -44,7 +44,7 @@ import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class Stepdefs {
+public class StepdefsTakingACourse {
     private Student student;
     private List<Course> courses;
     private Course wantedCourse;
